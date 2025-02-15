@@ -6,20 +6,22 @@ import {
   Patch,
   Post,
   Delete,
+  Query,
+  ParseIntPipe,
 } from '@nestjs/common';
-import { UserService, UserPayload } from './user.service';
+import { UserService, UserPayload, Role } from './user.service';
 
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  findAll(@Query('role') role: Role) {
+    return this.userService.findAll(role);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(Number(id));
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.userService.findOne(id);
   }
 
   @Post()
@@ -28,12 +30,15 @@ export class UserController {
   }
 
   @Patch(':id')
-  updateUser(@Param('id') id: string, @Body() userUpdateInfo: UserPayload) {
-    return this.userService.updateUser(Number(id), userUpdateInfo);
+  updateUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() userUpdateInfo: UserPayload,
+  ) {
+    return this.userService.updateUser(id, userUpdateInfo);
   }
 
   @Delete(':id')
-  deleteUser(@Param('id') id: string) {
-    return this.userService.deleteUser(Number(id));
+  deleteUser(@Param('id', ParseIntPipe) id: number) {
+    return this.userService.deleteUser(id);
   }
 }
